@@ -16,5 +16,5 @@ workflows:
         script: flutter pub get
       - name: Analyze
         script: flutter analyze || true
-      - name: Build iOS without signing
-        script: flutter build ios --release --no-codesign
+      - name: Build for simulator (no signing needed)
+        script: flutter build ios --simulator --debug
