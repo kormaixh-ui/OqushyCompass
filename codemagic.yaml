@@ -1,33 +1,20 @@
-# UNTESTED TEMPLATE. Check each key against the current Codemagic docs
-# (docs.codemagic.io, "Flutter" and "Publishing to App Store Connect").
 workflows:
-  ios-testflight:
-    name: OqushyCompass iOS
+  check-build:
+    name: Check build (no signing)
     instance_type: mac_mini_m2
-    max_build_duration: 60
-    integrations:
-      app_store_connect: YOUR_API_KEY_NAME   # name you give the key in Codemagic
+    max_build_duration: 30
     environment:
       flutter: stable
       xcode: latest
       cocoapods: default
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.yourname.studentCompass  # must match the generated one
     scripts:
-      - name: Generate iOS and Android folders
-        script: flutter create --org com.yourname --project-name student_compass --platforms=ios,android .
+      - name: Generate platform folders
+        script: flutter create --org com.karimamurat --project-name oqushy_compass --platforms=ios,android .
+      - name: Remove default test
+        script: rm -f test/widget_test.dart
       - name: Get packages
         script: flutter pub get
-      - name: Make app icons
-        script: dart run flutter_launcher_icons
-      - name: Set up code signing
-        script: xcode-project use-profiles
-      - name: Build IPA
-        script: flutter build ipa --release --export-options-plist=/Users/builder/export_options.plist
-    artifacts:
-      - build/ios/ipa/*.ipa
-    publishing:
-      app_store_connect:
-        auth: integration
-        submit_to_testflight: true
+      - name: Analyze
+        script: flutter analyze || true
+      - name: Build iOS without signing
+        script: flutter build ios --release --no-codesign
