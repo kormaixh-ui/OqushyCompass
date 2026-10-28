@@ -5,18 +5,16 @@ workflows:
     name: OqushyCompass iOS
     instance_type: mac_mini_m2
     max_build_duration: 60
-    integrations:
-      app_store_connect: YOUR_API_KEY_NAME   # name you give the key in Codemagic
     environment:
       flutter: stable
       xcode: latest
       cocoapods: default
       ios_signing:
         distribution_type: app_store
-        bundle_identifier: com.yourname.oqushyCompass  # must match the generated one
+        bundle_identifier: com.karima.oqushyCompass
     scripts:
       - name: Generate iOS and Android folders
-        script: flutter create --org com.yourname --project-name oqushy_compass --platforms=ios,android .
+        script: flutter create --org com.karima --project-name oqushy_compass --platforms=ios,android .
       - name: Get packages
         script: flutter pub get
       - name: Make app icons
