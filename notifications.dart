@@ -58,7 +58,7 @@ class Notifier {
       await _plugin.zonedSchedule(
         t.id,
         'Due ${t.remind == Remind.dayBefore ? 'tomorrow' : 'today'}: ${t.title}',
-        t.subject.isEmpty ? 'Open StudentCompass to review it.' : t.subject,
+        t.subject.isEmpty ? 'Open OqushyCompass to review it.' : t.subject,
         tz.TZDateTime.from(at, tz.local),
         const NotificationDetails(
           android: AndroidNotificationDetails('deadlines', 'Deadlines',
