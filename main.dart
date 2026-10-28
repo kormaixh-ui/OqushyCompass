@@ -11,16 +11,16 @@ Future<void> main() async {
   final store = TaskStore();
   await store.load();
   await Notifier.syncAll(store.tasks);
-  runApp(StudentCompassApp(store: store));
+  runApp(OqushyCompassApp(store: store));
 }
 
-class StudentCompassApp extends StatelessWidget {
-  const StudentCompassApp({super.key, required this.store});
+class OqushyCompassApp extends StatelessWidget {
+  const OqushyCompassApp({super.key, required this.store});
   final TaskStore store;
 
   @override
   Widget build(BuildContext context) => MaterialApp(
-        title: 'StudentCompass',
+        title: 'OqushyCompass',
         debugShowCheckedModeBanner: false,
         theme: buildTheme(),
         home: TasksScreen(store: store),
