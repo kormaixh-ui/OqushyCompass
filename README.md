@@ -1,4 +1,4 @@
-# StudentCompass (Flutter) — Stage 1
+# OqushyCompass (Flutter) — Stage 1
 
 Working now: Tasks screen (add, edit, delete, complete, filters, search, sort,
 validation, empty/error states), saved on the device, optional deadline
