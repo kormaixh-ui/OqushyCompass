@@ -94,9 +94,9 @@ class _TasksScreenState extends State<TasksScreen> {
               children: [
                 Row(children: [
                   Image.asset('assets/logo.png',
-                      width: 40, height: 40, semanticLabel: 'StudentCompass logo'),
+                      width: 40, height: 40, semanticLabel: 'OqushyCompass logo'),
                   const SizedBox(width: 12),
-                  Text('StudentCompass', style: serif(20, w: FontWeight.w500)),
+                  Text('OqushyCompass', style: serif(20, w: FontWeight.w500)),
                 ]),
                 const SizedBox(height: 16),
                 const Divider(height: 1, thickness: 1, color: kInk),
