@@ -1,4 +1,4 @@
-# StudentCompass (Flutter) — Stage 1
+# OqushyCompass (Flutter) — Stage 1
 
 Working now: Tasks screen (add, edit, delete, complete, filters, search, sort,
 validation, empty/error states), saved on the device, optional deadline
@@ -23,7 +23,7 @@ test refers to a class this project doesn't have).
   is open needs a small AppDelegate change (stage 2).
 - Tasks are stored only on the device; deleting the app deletes the data.
 -
-- # StudentCompass (Flutter) — Stage 2
+- # OqushyCompass (Flutter) — Stage 2
 
 Working now: Tasks screen (add, edit, delete, complete, filters, search, sort,
 validation, empty/error states), saved on the device, optional deadline
