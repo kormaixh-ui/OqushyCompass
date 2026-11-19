@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Oqushy Compass | Student planner</title>
+  <meta name="description" content="A school planner with deadlines, a week view, reminders and a Pomodoro timer.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23FBDDE8'/%3E%3Cpolygon points='16,4 22,16 10,16' fill='%23E58AAC'/%3E%3Cpolygon points='16,28 22,16 10,16' fill='%232F5DA8'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap">
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    (function () {
+      var t = null;
+      try { t = JSON.parse(localStorage.getItem('oqushy.v1') || '{}').theme || null; } catch (e) {}
+      if (t !== 'light' && t !== 'dark') t = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site">
+    <div class="wrap masthead">
+      <h1 class="brand"><a href="#/tasks">Oqushy Compass</a></h1>
+      <p class="today" id="todayLine"></p>
+    </div>
+    <nav class="nav" aria-label="Main">
+      <div class="tabs">
+        <a href="#/tasks" data-route="tasks">Tasks</a>
+        <a href="#/week" data-route="week">Week</a>
+        <a href="#/focus" data-route="focus">Focus</a>
+        <a href="#/settings" data-route="settings">Settings</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main" class="wrap" tabindex="-1">
+    <div id="storageNotice" class="notice" role="alert" hidden></div>
+
+    <div id="loading" class="state" role="status">Loading&hellip;</div>
+    <noscript><div class="state">This planner needs JavaScript to save your tasks. Turn it on and reload the page.</div></noscript>
+
+    <section id="view-tasks" class="view" aria-labelledby="h-tasks" hidden>
+      <div class="view-head">
+        <div>
+          <h2 id="h-tasks" tabindex="-1">Tasks</h2>
+          <p class="sub" id="tasksSub"></p>
+        </div>
+        <button type="button" class="btn primary" id="addTask">Add task</button>
+      </div>
+
+      <div class="tasks-layout">
+        <div class="tasks-main">
+          <div class="filters">
+            <label for="catFilter">Show</label>
+            <select id="catFilter">
+              <option value="all">All types</option>
+              <option value="homework">Homework</option>
+              <option value="project">Projects</option>
+              <option value="research">Research</option>
+              <option value="activity">Activities</option>
+            </select>
+          </div>
+          <div id="taskList"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-week" class="view" aria-labelledby="h-week" hidden>
+      <div class="view-head">
+        <div>
+          <h2 id="h-week" tabindex="-1">Week</h2>
+          <p class="sub" id="weekRange"></p>
+        </div>
+      </div>
+      <div class="week-nav" role="group" aria-label="Choose week">
+        <button type="button" class="btn" id="weekPrev" aria-label="Previous week">Previous</button>
+        <button type="button" class="btn" id="weekNow">This week</button>
+        <button type="button" class="btn" id="weekNext" aria-label="Next week">Next</button>
+      </div>
+      <ol id="weekGrid" class="agenda"></ol>
+    </section>
+
+    <section id="view-focus" class="view" aria-labelledby="h-focus" hidden>
+      <div class="view-head">
+        <h2 id="h-focus" tabindex="-1">Focus</h2>
+      </div>
+
+      <div class="focus-layout">
+        <div class="dial-card">
+          <div class="modes" role="group" aria-label="Timer type">
+            <button type="button" data-mode="focus" aria-pressed="true">Focus</button>
+            <button type="button" data-mode="short" aria-pressed="false">Short break</button>
+            <button type="button" data-mode="long" aria-pressed="false">Long break</button>
+          </div>
+
+          <div class="dial">
+            <svg viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+              <circle class="track" cx="100" cy="100" r="88"></circle>
+              <circle class="arc" id="dialArc" cx="100" cy="100" r="88" transform="rotate(-90 100 100)"></circle>
+              <g class="ticks">
+                <line x1="100" y1="4" x2="100" y2="16"></line>
+                <line x1="196" y1="100" x2="184" y2="100"></line>
+                <line x1="100" y1="196" x2="100" y2="184"></line>
+                <line x1="4" y1="100" x2="16" y2="100"></line>
+              </g>
+              <g id="needle">
+                <polygon class="needle-up" points="100,34 108,100 92,100"></polygon>
+                <polygon class="needle-down" points="100,166 108,100 92,100"></polygon>
+              </g>
+              <circle class="hub" cx="100" cy="100" r="5"></circle>
+            </svg>
+          </div>
+
+          <div class="dial-text">
+            <p class="time" id="timeText" role="timer" aria-live="off">25:00</p>
+            <p class="mode-label" id="modeLabel">Focus block</p>
+          </div>
+
+          <div class="controls">
+            <button type="button" class="btn primary" id="startBtn">Start focus</button>
+            <button type="button" class="btn" id="resetBtn">Reset</button>
+          </div>
+
+          <div class="field">
+            <label for="focusTask">Working on</label>
+            <select id="focusTask"></select>
+          </div>
+        </div>
+
+        <div class="focus-side">
+          <h3>Today</h3>
+          <p id="focusSummary" class="summary"></p>
+          <ol id="focusLog" class="log"></ol>
+
+          <p class="small lengths-link">Change the lengths in <a href="#/settings">Settings</a>.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-settings" class="view" aria-labelledby="h-settings" hidden>
+      <div class="view-head">
+        <h2 id="h-settings" tabindex="-1">Settings</h2>
+      </div>
+
+      <div class="settings">
+        <section class="set-group" aria-labelledby="g-notif">
+          <h3 id="g-notif">Notifications</h3>
+          <div class="set-card">
+            <div class="set-row">
+              <div class="set-text">
+                <p class="set-title">Browser notifications</p>
+                <p class="set-desc" id="notifState"></p>
+              </div>
+              <button type="button" class="btn" id="notifBtn" hidden>Turn on</button>
+            </div>
+          </div>
+          <p class="set-foot">Reminders only work while this page is open in a tab. They show up here at the time you set, and with notifications on you also get a pop-up.</p>
+        </section>
+
+        <section class="set-group" aria-labelledby="g-look">
+          <h3 id="g-look">Appearance</h3>
+          <div class="set-card">
+            <div class="set-row">
+              <div class="set-text">
+                <label class="set-title" for="themeSel">Theme</label>
+                <p class="set-desc" id="themeDesc">System follows the setting on your device.</p>
+              </div>
+              <select id="themeSel" aria-describedby="themeDesc">
+                <option value="system">System</option>
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <section class="set-group" aria-labelledby="g-timer">
+          <h3 id="g-timer">Focus timer</h3>
+          <form id="lengthsForm" novalidate>
+            <div class="set-card">
+              <div class="set-row">
+                <div class="set-text">
+                  <label class="set-title" for="lenFocus">Focus block</label>
+                  <p class="set-desc">Minutes, 1 to 120</p>
+                </div>
+                <input id="lenFocus" class="set-num" name="focus" type="number" inputmode="numeric" min="1" max="120" required>
+              </div>
+              <div class="set-row">
+                <div class="set-text">
+                  <label class="set-title" for="lenShort">Short break</label>
+                  <p class="set-desc">Minutes, 1 to 60</p>
+                </div>
+                <input id="lenShort" class="set-num" name="short" type="number" inputmode="numeric" min="1" max="60" required>
+              </div>
+              <div class="set-row">
+                <div class="set-text">
+                  <label class="set-title" for="lenLong">Long break</label>
+                  <p class="set-desc">Minutes, 1 to 60</p>
+                </div>
+                <input id="lenLong" class="set-num" name="long" type="number" inputmode="numeric" min="1" max="60" required>
+              </div>
+            </div>
+            <p class="field-error" id="lengthsError" role="alert" hidden></p>
+            <p class="set-foot">After every fourth focus block, the timer suggests the long break.</p>
+            <button type="submit" class="btn">Save lengths</button>
+          </form>
+        </section>
+
+        <section class="set-group" aria-labelledby="g-data">
+          <h3 id="g-data">Your data</h3>
+          <div class="set-card">
+            <div class="set-row">
+              <div class="set-text">
+                <p class="set-title">Saved in this browser</p>
+                <p class="set-desc">Tasks and focus sessions stay on this device. If you clear this site’s data in your browser, they’re gone.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="taskDialog" aria-labelledby="dlgTitle">
+    <form id="taskForm" method="dialog" novalidate>
+      <h2 id="dlgTitle">Add task</h2>
+
+      <div class="field">
+        <label for="fTitle">What needs doing</label>
+        <input id="fTitle" name="title" type="text" maxlength="120" required autocomplete="off">
+        <p class="field-error" id="errTitle" hidden>Give the task a title.</p>
+      </div>
+
+      <div class="field">
+        <label for="fCat">Type</label>
+        <select id="fCat" name="cat">
+          <option value="homework">Homework</option>
+          <option value="project">Project</option>
+          <option value="research">Research</option>
+          <option value="activity">Activity or club</option>
+        </select>
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <label for="fDate">Due date</label>
+          <input id="fDate" name="date" type="date">
+        </div>
+        <div class="field">
+          <label for="fTime">Due time <span class="opt">(optional)</span></label>
+          <input id="fTime" name="time" type="time">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="fRemind">Reminder</label>
+        <select id="fRemind" name="remind" data-describedby="remindHint" aria-describedby="remindHint">
+          <option value="">No reminder</option>
+          <option value="0">At the due time</option>
+          <option value="10">10 minutes before</option>
+          <option value="60">1 hour before</option>
+          <option value="1440">1 day before</option>
+        </select>
+        <p class="hint" id="remindHint">Without a due time, reminders count from 09:00 on the due date.</p>
+        <p class="field-error" id="errRemind" hidden>Pick a due date to use a reminder.</p>
+      </div>
+
+      <div class="field">
+        <label for="fNotes">Notes <span class="opt">(optional)</span></label>
+        <textarea id="fNotes" name="notes" rows="3" maxlength="500"></textarea>
+      </div>
+
+      <div class="dlg-actions">
+        <button type="button" class="btn quiet danger" id="deleteBtn" hidden>Delete task</button>
+        <button type="button" class="btn" id="cancelBtn">Cancel</button>
+        <button type="submit" class="btn primary" id="saveBtn">Save task</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toasts" class="toasts" role="status" aria-live="polite"></div>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
